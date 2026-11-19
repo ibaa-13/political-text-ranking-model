@@ -1,0 +1,4 @@
+comparison,n_compared,agreements,agreement_pct,cohen_kappa,qwen_yes_total,luna_yes_total,codex_yes_total
+Qwen vs Luna API,300,250,83.33333333333334,0.6564833050886274,179,173,130
+Luna API vs Codex,300,237,79.0,0.5884146341463415,179,173,130
+Qwen vs Codex,300,223,74.33333333333333,0.49956672443674166,179,173,130

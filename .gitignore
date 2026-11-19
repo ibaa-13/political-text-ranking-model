@@ -1,2 +1,8 @@
 .vscode/
 data/
+
+# Keep output/ tracked: it contains the project's generated results and figures.
+
+# Python bytecode and cache directories
+__pycache__/
+*.py[cod]

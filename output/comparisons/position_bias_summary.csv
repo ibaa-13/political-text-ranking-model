@@ -1,0 +1,3 @@
+reasoning_effort,model,seed,n_pairs,agreements,agreement_pct
+all,gpt-6-luna,42,300,249,83.0
+medium,gpt-6-luna,42,300,249,83.0
