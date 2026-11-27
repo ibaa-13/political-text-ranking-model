@@ -1,0 +1,9 @@
+statistic,value
+"technology segments scored (108-110, 115)",7338.0
+party AUC on technology segments (D vs R),0.606
+"party AUC, congress 108",0.551
+"party AUC, congress 109",0.569
+"party AUC, congress 110",0.537
+"party AUC, congress 115",0.688
+speakers with >= 5 technology segments,256.0
+"party AUC, speaker averages",0.645

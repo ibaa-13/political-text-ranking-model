@@ -1,0 +1,6 @@
+model,held-out pair accuracy,Spearman with BT scores,party AUC,Pearson with DW-NOMINATE,"Pearson with DW-NOMINATE, within D","Pearson with DW-NOMINATE, within R"
+pairwise_embed,0.605,0.296,0.646,0.255,0.239,0.12
+ridge_bt_embed,0.61,0.304,0.659,0.301,0.291,0.08
+pairwise_tfidf,0.621,0.282,0.591,0.181,0.138,-0.077
+luna_direct,0.853,0.922,0.952,0.785,0.196,0.029
+bt_upper_bound,0.948,1.0,0.95,0.787,0.19,0.215
