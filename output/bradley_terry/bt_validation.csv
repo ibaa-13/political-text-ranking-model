@@ -1,0 +1,17 @@
+statistic,value
+texts,173.0
+usable comparisons (A/B/TIE),4721.0
+tie parameter nu,0.03
+"held-out pair accuracy, Bradley-Terry (5-fold CV)",0.926
+"held-out pair accuracy, Luna direct score",0.846
+"Spearman, BT vs Luna direct score",0.922
+"Pearson, BT vs DW-NOMINATE (all)",0.787
+"Pearson, Luna direct vs DW-NOMINATE (all)",0.785
+"Pearson, BT vs DW-NOMINATE (within D)",0.19
+"Pearson, Luna direct vs DW-NOMINATE (within D)",0.196
+"Pearson, BT vs DW-NOMINATE (within R)",0.215
+"Pearson, Luna direct vs DW-NOMINATE (within R)",0.029
+"party AUC, BT score",0.95
+"party AUC, Luna direct score",0.952
+median bootstrap SE of BT score,0.631
+SD of BT scores,6.169
