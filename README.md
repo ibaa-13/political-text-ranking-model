@@ -153,9 +153,49 @@ python ./src/03_comparision/03_visualize_comparison_graph.py
 
 By default it writes `output/comparisons/comparison_diagnostics.png` and `output/comparisons/pairwise_node_summary.csv`. Use `--graph`, `--texts`, `--comparisons`, `--image`, or `--summary` to provide different paths.
 
+## Round 2: sample more texts without Qwen
+
+`src/02_filter/00_sample_new_texts.py` draws a new random sample from `data/processed/paragraphs.parquet`, skipping every excerpt already in `output/filtered_texts/ideological_luna_results.csv`. It writes `output/round2/sample.csv` in the format `02_luna_api.py` expects (`qwen_label` is left empty), so no GPU is needed:
+
+```powershell
+python ./src/02_filter/00_sample_new_texts.py --n-texts 1500
+python ./src/02_filter/02_luna_api.py output/round2/sample.csv output/round2/ideological_luna_results.csv
+python ./src/03_comparision/01_compare_texts.py --input output/round2/ideological_luna_results.csv --output output/round2/comparisons
+```
+
+## Workflow 3: Bradley–Terry scores
+
+`src/04_bradley_terry/01_fit_bradley_terry.py` fits a Bradley–Terry model with ties (Davidson) to `output/comparisons/comparisons.csv`. `UNCLEAR` answers are dropped; a small L2 penalty keeps scores finite and scores are centred to sum to zero. Bootstrap standard errors resample comparisons (200 draws).
+
+```powershell
+python ./src/04_bradley_terry/01_fit_bradley_terry.py
+```
+
+Outputs in `output/bradley_terry/`:
+
+- `bt_scores.csv`: one row per text with BT score, bootstrap SE, number of comparisons, Luna direct score, party and DW-NOMINATE.
+- `bt_validation.csv`: held-out pair accuracy (5-fold CV over comparisons) for BT and for Luna's direct score; correlations with Luna's direct score and DW-NOMINATE (overall and within party); party AUC.
+- `bt_validation.png`: BT score against DW-NOMINATE and against Luna's direct score.
+
+First results (173 texts, 4,721 usable comparisons): held-out pair accuracy 0.93 (Luna direct score 0.85), party AUC 0.95, Pearson r with DW-NOMINATE 0.79 overall but only about 0.2 within each party.
+
+## Workflow 4: text ranker for unseen texts
+
+`src/05_ranker/01_train_ranker.py` trains a linear scorer on sentence embeddings (`all-MiniLM-L6-v2`) with the pairwise logistic loss `P(i > j) = sigmoid(f(x_i) - f(x_j))`. It compares this with ridge regression on training-only BT scores and a TF–IDF pairwise scorer, using 5-fold cross-validation grouped by speaker (no speaker in both training and test). Regularisation is chosen by inner 3-fold CV over training speakers. Out-of-fold scores are standardised within each fold before pooling.
+
+The final model, trained on all texts, then scores the supervisor's technology speeches from the 108th–110th and 115th Congresses (years not in the main corpus). Put that file at `data/external/tech_speeches.parquet` (not tracked by git). Embeddings are cached in `data/processed/`.
+
+```powershell
+python ./src/05_ranker/01_train_ranker.py
+```
+
+Outputs in `output/ranker/`: `ranker_comparison.csv`, `tech_transfer.csv`, `ranker_results.png`, `ranker_scores_comparison_texts.csv`, `ranker_scores_tech.csv`.
+
+First results: with only about 138 training texts per fold the ranker is weak: held-out pair accuracy 0.60 (chance 0.50), Pearson r with DW-NOMINATE 0.25, party AUC 0.61 on the technology speeches. More labelled texts (round 2) are the next step.
+
 ## Dependencies and API keys
 
-API scripts require the `openai` package and a valid `OPENAI_API_KEY`. CSV scripts use `pandas`; corpus preparation also requires Parquet support. The Euler Qwen job uses `~/venvs/political-pairs` and its PyTorch, Transformers, and quantization packages. The pairwise script also requires `networkx` and `matplotlib`.
+API scripts require the `openai` package and a valid `OPENAI_API_KEY`. CSV scripts use `pandas`; corpus preparation also requires Parquet support. Bradley–Terry and the ranker use `scipy`, `scikit-learn` and `sentence-transformers` (the embedding model downloads on first use; no GPU needed). The Euler Qwen job uses `~/venvs/political-pairs` and its PyTorch, Transformers, and quantization packages. The pairwise script also requires `networkx` and `matplotlib`.
 
 Install packages in the environment where each script runs. Do not put the API key in source files or CSVs.
 
